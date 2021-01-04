@@ -56,7 +56,7 @@ const queryParams = {
 };
 async function get(getSchema, queryParams) {
   try {
-    const fields = Object.keys(getSchema.fields);
+    const fields = getSchema.fields ? Object.keys(getSchema.fields) : [];
     const fieldAliases = fields.map((el) => {
       if (getSchema.fields[el].alias) {
         return el + " as " + getSchema.fields[el].alias;
@@ -64,7 +64,7 @@ async function get(getSchema, queryParams) {
         return el;
       }
     });
-    const fieldCommaSep = fieldAliases.join(",");
+    const fieldCommaSep = fieldAliases.length ? fieldAliases.join(",") : "*";
     var sqlQuery = `SELECT ${fieldCommaSep} FROM ${getSchema.table}`;
     if (queryParams) {
       if (queryParams.where) {
@@ -80,7 +80,7 @@ async function get(getSchema, queryParams) {
         sqlQuery = sqlQuery + " ORDER BY " + key + " " + value;
       }
     }
-    // console.log("query ==> ", sqlQuery);
+    console.log("query ==> ", sqlQuery);
     const result = await query(sqlQuery);
     return result;
   } catch (error) {

@@ -20,7 +20,7 @@ const getSchema = {
     },
     customer: {
       type: "fk",
-      alias: "document",
+      alias: "customer_id",
     },
     address: {
       type: "column",

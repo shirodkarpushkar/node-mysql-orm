@@ -12,40 +12,35 @@ const querySchema = {
   },
 };
 const getSchema = {
-  table: "fm05__cfattached_documents",
+  table: "customer_addresses",
   fields: {
     id: {
       type: "pk",
       //   alias: "id",
     },
-    cfdocument_id: {
+    customer: {
       type: "fk",
       alias: "document",
-      ref: {
-        table: "fm05__cfdocuments",
-        fields: {
-          id: {
-            type: "pk",
-            alias: "id",
-          },
-          filename: {
-            type: "coloumn",
-            alias: "filename",
-          },
-          destination: {
-            type: "coloumn",
-            alias: "filename",
-          },
-          mimetype: {
-            type: "coloumn",
-            alias: "mimetype",
-          },
-          size: {
-            type: "coloumn",
-            alias: "mimetype",
-          },
-        },
-      },
+    },
+    address: {
+      type: "column",
+      alias: "addressLine1",
+    },
+    address2: {
+      type: "column",
+      alias: "addressLine2",
+    },
+    city: {
+      type: "column",
+      alias: "city",
+    },
+    state: {
+      type: "column",
+      alias: "state",
+    },
+    zipcode: {
+      type: "column",
+      alias: "zipcode",
     },
   },
 };
@@ -87,6 +82,23 @@ async function get(getSchema, queryParams) {
     throw functions.errorHandler(error);
   }
 }
+async function create(schema, values) {
+  try {
+    const fields = schema.fields
+      ? Object.keys(schema.fields).filter((colVal) => colVal !== "id")
+      : [];
+    const fieldCommaSep = fields.join(",");
+    const insertValues = [values.map((el) => Object.values(el))];
+
+    const insertQuery = `INSERT INTO ${schema.table} ( ${fieldCommaSep} ) VALUES ? `;
+    console.log("file: app.js ~ line 94 ~ create ~ insertQuery", insertQuery)
+
+    const result = await query(insertQuery, insertValues);
+    return result;
+  } catch (error) {
+    throw functions.errorHandler(error);
+  }
+}
 async function getRecursive(getSchema) {
   try {
     const fields = Object.keys(getSchema.fields);
@@ -108,7 +120,33 @@ async function getRecursive(getSchema) {
 
 async function main() {
   try {
-    const result = await get(getSchema);
+    const values = [
+      {
+        customer: 56,
+        address: " 439 East District ",
+        address2: "West City,New York",
+        city: "New York",
+        state: "CA",
+        zipcode: "12414214",
+      },
+      {
+        customer: 56,
+        address: " 439 East District ",
+        address2: "West City,New York",
+        city: "New York",
+        state: "CA",
+        zipcode: "12414214",
+      },
+      {
+        customer: 56,
+        address: " 439 East District ",
+        address2: "West City,New York",
+        city: "New York",
+        state: "CA",
+        zipcode: "12414214",
+      },
+    ];
+    const result = await create(getSchema, values);
     console.log("line 58 ~ result", JSON.stringify(result, null, 4));
   } catch (error) {
     console.log(" app.js ~ line 63 ~ main ~ err", error);

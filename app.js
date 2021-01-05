@@ -46,7 +46,7 @@ const getSchema = {
 };
 const queryParams = {
   where: {
-    id: 1,
+    id: 39,
   },
 };
 async function get(getSchema, queryParams) {
@@ -91,9 +91,30 @@ async function create(schema, values) {
     const insertValues = [values.map((el) => Object.values(el))];
 
     const insertQuery = `INSERT INTO ${schema.table} ( ${fieldCommaSep} ) VALUES ? `;
-    console.log("file: app.js ~ line 94 ~ create ~ insertQuery", insertQuery)
 
     const result = await query(insertQuery, insertValues);
+    return result;
+  } catch (error) {
+    throw functions.errorHandler(error);
+  }
+}
+async function update(schema, field, queryParams) {
+  try {
+    const entries = Object.entries(field);
+    const fields = entries.map((el) => el[0] + " = " + " ' " + el[1] + " ' ");
+    const fieldCommaSep = fields.join(",");
+
+    var sqlQuery = `UPDATE ${schema.table} SET ${fieldCommaSep} `;
+
+    if (queryParams.where) {
+      const whereStr = [];
+      for (let key in queryParams.where) {
+        whereStr.push(key + " = " + queryParams.where[key]);
+      }
+      sqlQuery = sqlQuery + " WHERE " + whereStr.join(" AND ");
+    }
+
+    const result = await query(sqlQuery);
     return result;
   } catch (error) {
     throw functions.errorHandler(error);
@@ -120,33 +141,16 @@ async function getRecursive(getSchema) {
 
 async function main() {
   try {
-    const values = [
-      {
-        customer: 56,
-        address: " 439 East District ",
-        address2: "West City,New York",
-        city: "New York",
-        state: "CA",
-        zipcode: "12414214",
-      },
-      {
-        customer: 56,
-        address: " 439 East District ",
-        address2: "West City,New York",
-        city: "New York",
-        state: "CA",
-        zipcode: "12414214",
-      },
-      {
-        customer: 56,
-        address: " 439 East District ",
-        address2: "West City,New York",
-        city: "New York",
-        state: "CA",
-        zipcode: "12414214",
-      },
-    ];
-    const result = await create(getSchema, values);
+    const value = {
+      customer: 49,
+      address: " change ",
+      address2: "Westsdfsfd City,New York",
+      city: "New dfsdf ",
+      state: "CA",
+      zipcode: "12414214",
+    };
+
+    const result = await update(getSchema, value, queryParams);
     console.log("line 58 ~ result", JSON.stringify(result, null, 4));
   } catch (error) {
     console.log(" app.js ~ line 63 ~ main ~ err", error);

@@ -70,6 +70,15 @@ async function get(getSchema, queryParams) {
         const value = queryParams.order[key];
         sqlQuery = sqlQuery + " ORDER BY " + key + " " + value;
       }
+      if (queryParams.pagination) {
+        const pageOffset =
+          queryParams.pagination.itemsPerPage *
+          (queryParams.pagination.page - 1);
+
+        sqlQuery =
+          sqlQuery +
+          ` LIMIT ${queryParams.pagination.itemsPerPage} offset ${pageOffset}`;
+      }
     }
     console.log("query ==> ", sqlQuery);
     const result = await query(sqlQuery);
@@ -156,12 +165,13 @@ async function getRecursive(getSchema) {
 async function main() {
   try {
     const queryParams = {
-      where: {
-        id: 38,
+      pagination: {
+        page: 2,
+        itemsPerPage: 5,
       },
     };
 
-    const result = await remove(getSchema, queryParams);
+    const result = await get(getSchema, queryParams);
     console.log("line 58 ~ result", JSON.stringify(result, null, 4));
   } catch (error) {
     console.log(" app.js ~ line 63 ~ main ~ err", error);

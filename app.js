@@ -127,7 +127,6 @@ async function remove(schema, queryParams) {
       }
       sqlQuery = sqlQuery + " WHERE " + whereStr.join(" AND ");
     }
-    console.log("app.js ~ line 129 ~ remove ~ sqlQuery", sqlQuery);
 
     const result = await query(sqlQuery);
     return result;
@@ -158,7 +157,7 @@ async function main() {
   try {
     const queryParams = {
       where: {
-        address: "change",
+        id: 38,
       },
     };
 
